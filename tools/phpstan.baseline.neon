@@ -1,0 +1,20 @@
+parameters:
+	ignoreErrors:
+		-
+			message: """
+				#^Fetching class constant class of deprecated class Nette\\\\Mail\\\\IMailer\\:
+				use Nette\\\\Mail\\\\Mailer$#
+			"""
+			count: 4
+			path: ../tests/Unit/DI/MailExtensionTest.php
+
+		-
+			message: "#^Parameter \\#1 \\$filename of function file_get_contents expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../tests/Unit/Mailer/FileMailerTest.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
+			count: 1
+			path: ../tests/Unit/Mailer/FileMailerTest.php
+

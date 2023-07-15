@@ -1,0 +1,13 @@
+extensions:
+	mail: Nette\Bridges\MailDI\MailExtension
+	orisai.mail: OriNette\Mail\DI\MailExtension
+
+orisai.mail:
+	mailers:
+		-
+			factory: OriNette\Mail\Mailer\ToArrayMailer
+			autowired: self
+
+services:
+	mail.mailer:
+		autowired: false

@@ -1,0 +1,197 @@
+{templateType OriNette\Mail\Tracy\MailPanelTemplate}
+
+<style>
+	#tracy-debug .tracy-panel.tracy-mode-peek .orisai-mail-panel,
+	#tracy-debug .tracy-panel.tracy-mode-float .orisai-mail-panel {
+		overflow-y: scroll;
+	}
+
+	#tracy-debug .tracy-panel.tracy-mode-peek .orisai-mail-panel table,
+	#tracy-debug .tracy-panel.tracy-mode-float .orisai-mail-panel table {
+		margin-right: 10px;
+		min-width: 600px;
+	}
+
+	#tracy-debug .tracy-panel.tracy-mode-window .orisai-mail-panel table {
+		width: 100%;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel table {
+		margin-bottom: 10px;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel table:last-child {
+		margin-bottom: 0;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel th {
+		width: 80px;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel-actions {
+		float: right;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel-actions a {
+		margin-left: 7px;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel-preview-txt td {
+		white-space: pre-wrap;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel-preview-html td {
+		padding: 0;
+	}
+
+	#tracy-debug .tracy-panel .orisai-mail-panel-preview-html iframe {
+		display: block;
+		width: 100%;
+		background: #FFF;
+	}
+</style>
+
+<h1>Sent emails</h1>
+
+{if $messages !== []}
+	{include emails}
+{else}
+	<p>No emails.</p>
+{/if}
+
+{define emails}
+	<div id="orisai-mail-panel" class="tracy-inner orisai-mail-panel">
+		<table n:if="$isPersistent">
+			<tr>
+				<th colspan="2">
+					<div class="orisai-mail-panel-actions">
+						<a href="{$createLink(['orisai-action' => 'delete'])}">
+							Delete all
+						</a>
+					</div>
+				</th>
+			</tr>
+		</table>
+
+		{foreach array_reverse($messages, true) as $messageId => $message}
+			<table class="orisai-mail-message">
+				<tr>
+					<th colspan="2">
+						<div class="orisai-mail-panel-actions">
+							<a class="tracy-toggle tracy-collapsed" data-tracy-ref="^table .orisai-mail-panel-preview-txt">
+								Preview TXT
+							</a>
+							<a class="tracy-toggle tracy-collapsed" data-tracy-ref="^table .orisai-mail-panel-preview-html">
+								Preview HTML
+							</a>
+							<a n:if="$isPersistent" target="_blank" href="{$createLink(['orisai-action' => 'detail', 'orisai-id' => $messageId])}">
+								Open
+							</a>
+							<a n:if="$isPersistent" target="_blank" href="{$createLink(['orisai-action' => 'source', 'orisai-id' => $messageId])}">
+								Source
+							</a>
+							<a n:if="$isPersistent" href="{$createLink(['orisai-action' => 'delete', 'orisai-id' => $messageId])}">
+								Delete
+							</a>
+						</div>
+						<div class="orisai-mail-panel-subject"
+							 title="Sent at {$message->getHeader('Date')}"
+						>
+							{$message->getSubject()}
+						</div>
+					</th>
+				</tr>
+
+				{foreach ['From', 'To', 'Cc', 'Bcc'] as $headerName}
+					{var $header = $message->getHeader($headerName)}
+					<tr n:ifset="$header">
+						<th>{$headerName}</th>
+						<td>
+							{foreach $header as $email => $name}
+								<a href="mailto:{$email}">{$name ?: $email}</a>{sep}, {/sep}
+							{/foreach}
+						</td>
+					</tr>
+				{/foreach}
+
+				{var $header = $message->getHeader('Return-Path')}
+				<tr n:ifset="$header">
+					<th>Return-Path</th>
+					<td>
+						<a href="mailto:{$email}">{$header}</a>
+					</td>
+				</tr>
+
+				{var $attachments = $message->getAttachments()}
+				<tr n:if="$attachments">
+					<th>Attachments</th>
+					<td>
+						{foreach $attachments as $attachmentId => $attachment}
+							<a n:tag-if="$isPersistent"
+									target="_blank"
+									href="{$createLink(['orisai-action' => 'detail', 'orisai-id' => $messageId, 'orisai-attachment-id' => $attachmentId])}"
+							>
+								{$getAttachmentLabel($attachment)}
+							</a>
+							{sep}<br>{/sep}
+						{/foreach}
+					</td>
+				</tr>
+
+				<tr class="orisai-mail-panel-preview-txt tracy-collapsed">
+					<td colspan="2">{$getPlainText($message)}</td>
+				</tr>
+
+				<tr class="orisai-mail-panel-preview-html tracy-collapsed">
+					{capture $htmlPreview}{include MailPanel.body.latte, message: $message, getPlainText: $getPlainText}{/capture}
+					<td colspan="2" data-content="{$htmlPreview}"></td>
+				</tr>
+			</table>
+		{/foreach}
+
+		<script>
+			(function () {
+
+				const panel = document.getElementById('orisai-mail-panel');
+				const messages = panel.querySelectorAll('table.orisai-mail-message');
+
+				for (let i = 0; i < messages.length; i++) {
+					(function (message) {
+
+						const actions = message.querySelector('.orisai-mail-panel-actions');
+						const preview = message.querySelector('.orisai-mail-panel-preview-html td');
+
+						const initHtmlPreview = function () {
+							const iframe = document.createElement('iframe');
+							preview.appendChild(iframe);
+
+							iframe.contentWindow.document.write(preview.dataset.content);
+							iframe.contentWindow.document.close();
+							delete preview.dataset.content;
+
+							const baseTag = iframe.contentWindow.document.createElement('base');
+							baseTag.target = '_parent';
+							iframe.contentWindow.document.body.appendChild(baseTag);
+
+							const fixHeight = function (ev) {
+								iframe.style.height = '0 px';
+								iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+								iframe.contentWindow.removeEventListener(ev.type, fixHeight);
+							};
+
+							iframe.contentWindow.addEventListener('load', fixHeight);
+							iframe.contentWindow.addEventListener('resize', fixHeight);
+							actions.removeEventListener('tracy-toggle', initHtmlPreview);
+							actions.removeEventListener('click', initHtmlPreview);
+						};
+
+						actions.addEventListener('tracy-toggle', initHtmlPreview);
+						actions.addEventListener('click', initHtmlPreview);
+
+					})(messages.item(i));
+				}
+
+			})();
+		</script>
+	</div>
+{/define}

@@ -1,0 +1,12 @@
+extensions:
+	orisai.mail: OriNette\Mail\DI\MailExtension
+	tracy: Tracy\Bridges\Nette\TracyExtension
+
+orisai.mail:
+	debug:
+		panel: true
+		tempDir: %mailDir%
+		cleanup: '-1 second'
+
+parameters:
+	mailDir: %tempDir%/debugPanel

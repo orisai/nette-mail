@@ -1,0 +1,13 @@
+extensions:
+	orisai.mail: OriNette\Mail\DI\MailExtension
+
+orisai.mail:
+	mailers:
+		-
+			factory: OriNette\Mail\Mailer\ToArrayMailer
+			autowired: self
+
+services:
+	- Nette\Http\Request(
+		Nette\Http\UrlScript('https://www.orisai.dev')
+	)

@@ -1,0 +1,2 @@
+extensions:
+	orisai.mail: OriNette\Mail\DI\MailExtension
