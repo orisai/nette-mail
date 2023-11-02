@@ -161,6 +161,9 @@ $messages = $mailer->getMessages();
 
 Send emails to Tracy bar panel for development
 
+> This mailer is based on great [nextras/mail-panel](https://github.com/nextras/mail-panel)
+> from [@JanTvrdik](https://github.com/JanTvrdik). Thank you, Jan!
+
 ```neon
 orisai.mail:
 	debug:
