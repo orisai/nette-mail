@@ -197,7 +197,7 @@ MSG,
 
 		$mailer->send($message);
 
-		$clock->move(1);
+		$clock->sleep(1);
 		$mailer->send($message);
 
 		$ds = DIRECTORY_SEPARATOR;
