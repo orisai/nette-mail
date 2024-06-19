@@ -2,7 +2,7 @@ parameters:
 	ignoreErrors:
 		-
 			message: """
-				#^Fetching class constant class of deprecated class Nette\\\\Mail\\\\IMailer\\:
+				#^Fetching class constant class of deprecated interface Nette\\\\Mail\\\\IMailer\\:
 				use Nette\\\\Mail\\\\Mailer$#
 			"""
 			count: 4
