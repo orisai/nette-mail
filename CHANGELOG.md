@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/orisai/nette-mail/compare/1.0.0...v1.x)
 
+### Added
+
+- Allow PHP 8.3
+
 ### Changed
 
 - Requires `orisai/clock:^1.2.0`
