@@ -113,6 +113,7 @@ final class OverwriteRecipientMailerTest extends TestCase
 		);
 
 		$mail = new Message();
+		$mail->addTo('sauron@barad-dur.com');
 		$mailer->send($mail);
 
 		$mails = $toArrayMailer->getMessages();
@@ -127,6 +128,28 @@ final class OverwriteRecipientMailerTest extends TestCase
 		);
 		self::assertNull($sentMail->getHeader('Cc'));
 		self::assertNull($sentMail->getHeader('Bcc'));
+	}
+
+	/**
+	 * If no recipient was set, then sending mail would fail.
+	 * When overwriting recipient, it should be the same to keep testing environment behavior consistent with production.
+	 */
+	public function testRecipientNotSetWithoutOriginalRecipient(): void
+	{
+		$toArrayMailer = new ToArrayMailer();
+		$mailer = new OverwriteRecipientMailer(
+			$toArrayMailer,
+			'celebrimbor@eregionforge.com',
+		);
+
+		$mail = new Message();
+		$mailer->send($mail);
+
+		$mails = $toArrayMailer->getMessages();
+		$sentMail = array_pop($mails);
+		self::assertNotNull($sentMail);
+
+		self::assertNull($sentMail->getHeader('To'));
 	}
 
 	public function testOriginalsBackup(): void

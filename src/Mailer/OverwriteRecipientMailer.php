@@ -46,12 +46,16 @@ final class OverwriteRecipientMailer implements Mailer
 	{
 		$changedMail = clone $mail;
 
+		$to = $mail->getHeader('To');
+
 		$this->backupOriginalHeader($changedMail, 'To');
 		$this->backupOriginalHeader($changedMail, 'Cc');
 		$this->backupOriginalHeader($changedMail, 'Bcc');
 
-		foreach ($this->to as $email => $name) {
-			$changedMail->addTo($email, $name);
+		if ($to !== null) {
+			foreach ($this->to as $email => $name) {
+				$changedMail->addTo($email, $name);
+			}
 		}
 
 		foreach ($this->cc as $email => $name) {
