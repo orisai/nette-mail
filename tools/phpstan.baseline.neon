@@ -1,20 +1,23 @@
 parameters:
 	ignoreErrors:
 		-
-			message: """
-				#^Fetching class constant class of deprecated interface Nette\\\\Mail\\\\IMailer\\:
-				use Nette\\\\Mail\\\\Mailer$#
-			"""
+			message: '''
+				#^Fetching class constant class of deprecated interface Nette\\Mail\\IMailer\:
+				use Nette\\Mail\\Mailer$#
+			'''
+			identifier: classConstant.deprecatedInterface
 			count: 4
 			path: ../tests/Unit/DI/MailExtensionTest.php
 
 		-
-			message: "#^Parameter \\#1 \\$filename of function file_get_contents expects string, string\\|null given\\.$#"
+			message: '#^Parameter \#1 \$filename of function file_get_contents expects string, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../tests/Unit/Mailer/FileMailerTest.php
 
 		-
-			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../tests/Unit/Mailer/FileMailerTest.php
 
