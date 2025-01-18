@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE neon PUBLIC "-//NEON//Neon plugin XML V0.0.1//EN" "../.idea/intellij-neon-pro/xmlSources/Neon.xsd">
+<neon vendor="orisai/nette-mail" version="1">
+	<extensions>
+		<extension type="OriNette\Mail\DI\MailExtension">
+			<schema>
+				<structure>
+					<field name="debug">
+						<structure>
+							<field name="panel" default="false">
+								<bool/>
+							</field>
+							<field name="tempDir" default="null">
+								<string/>
+								<null/>
+							</field>
+							<field name="cleanup" default="null">
+								<string/>
+								<null/>
+							</field>
+						</structure>
+					</field>
+					<field name="mailers" default="[]">
+						<arrayOf>
+							<value>
+								<useReusable ref="definition"/>
+							</value>
+						</arrayOf>
+					</field>
+				</structure>
+			</schema>
+			<services>
+				<service name="tracy.mailer" type="OriNette\Mail\Mailer\TracyPanelMailer"/>
+				<service name="tracy.panel" type="OriNette\Mail\Tracy\MailPanel"/>
+				<service name="multiMailer" type="OriNette\Mail\Mailer\MultiMailer"/>
+				<service name="setMessageIdMailer" type="OriNette\Mail\Mailer\SetMessageIdMailer"/>
+				<service name="mailer" type="Nette\Mail\Mailer"/>
+				<service name="command.mailTest" type="OriNette\Mail\Command\MailerTestCommand"/>
+			</services>
+		</extension>
+	</extensions>
+	<reusables>
+		<reusable id="definition">
+			<string/>
+			<arrayOf>
+				<key>
+					<int/>
+					<string/>
+				</key>
+				<value>
+					<mixed/>
+				</value>
+			</arrayOf>
+			<type value="object"/>
+		</reusable>
+	</reusables>
+</neon>
