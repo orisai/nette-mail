@@ -2,7 +2,7 @@ parameters:
 	ignoreErrors:
 		-
 			message: '''
-				#^Fetching class constant class of deprecated interface Nette\\Mail\\IMailer\:
+				#^Access to constant on deprecated interface Nette\\Mail\\IMailer\:
 				use Nette\\Mail\\Mailer$#
 			'''
 			identifier: classConstant.deprecatedInterface
