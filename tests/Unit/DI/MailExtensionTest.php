@@ -96,6 +96,7 @@ MSG,
 		$toArrayMailer = $container->getByType(ToArrayMailer::class);
 		$sentMessage = $toArrayMailer->getMessages()[0];
 		$messageId = $sentMessage->getHeader('Message-ID');
+		self::assertIsString($messageId);
 		self::assertMatchesRegularExpression('#<(.+)@www.orisai.dev>#', $messageId);
 	}
 

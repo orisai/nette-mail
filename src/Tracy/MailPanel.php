@@ -151,7 +151,11 @@ final class MailPanel implements IBarPanel
 	{
 		return static function (MimePart $attachment): string {
 			$contentDisposition = $attachment->getHeader('Content-Disposition');
+			assert(is_string($contentDisposition));
+
 			$contentType = $attachment->getHeader('Content-Type');
+			assert(is_string($contentType));
+
 			$matches = Strings::match($contentDisposition, '#filename="(.+?)"#');
 
 			/** @infection-ignore-all */

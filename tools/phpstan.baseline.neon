@@ -1,22 +1,31 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '''
-				#^Access to constant on deprecated interface Nette\\Mail\\IMailer\:
-				use Nette\\Mail\\Mailer$#
+			rawMessage: '''
+				Call to deprecated method setTempDirectory() of class Latte\Engine:
+				use setCacheDirectory() instead
+			'''
+			identifier: method.deprecated
+			count: 1
+			path: ../src/Tracy/MailPanel.php
+
+		-
+			rawMessage: '''
+				Access to constant on deprecated interface Nette\Mail\IMailer:
+				use Nette\Mail\Mailer
 			'''
 			identifier: classConstant.deprecatedInterface
 			count: 4
 			path: ../tests/Unit/DI/MailExtensionTest.php
 
 		-
-			message: '#^Parameter \#1 \$filename of function file_get_contents expects string, string\|null given\.$#'
+			rawMessage: 'Parameter #1 $filename of function file_get_contents expects string, string|null given.'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Unit/Mailer/FileMailerTest.php
 
 		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, string\|false given\.$#'
+			rawMessage: 'Parameter #3 $subject of function str_replace expects array<string>|string, string|false given.'
 			identifier: argument.type
 			count: 1
 			path: ../tests/Unit/Mailer/FileMailerTest.php
