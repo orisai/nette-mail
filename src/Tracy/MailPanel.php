@@ -124,7 +124,9 @@ final class MailPanel implements IBarPanel
 			assert($subPart instanceof MimePart);
 
 			$contentType = $subPart->getHeader('Content-Type');
-			assert(is_string($contentType));
+			if (!is_string($contentType)) {
+				continue;
+			}
 
 			if (
 				str_starts_with($contentType, 'text/plain')
@@ -151,12 +153,15 @@ final class MailPanel implements IBarPanel
 	{
 		return static function (MimePart $attachment): string {
 			$contentDisposition = $attachment->getHeader('Content-Disposition');
-			assert(is_string($contentDisposition));
-
 			$contentType = $attachment->getHeader('Content-Type');
-			assert(is_string($contentType));
 
-			$matches = Strings::match($contentDisposition, '#filename="(.+?)"#');
+			$matches = is_string($contentDisposition)
+				? Strings::match($contentDisposition, '#filename="(.+?)"#')
+				: null;
+
+			if (!is_string($contentType)) {
+				$contentType = 'unknown';
+			}
 
 			/** @infection-ignore-all */
 			return ($matches !== null ? "$matches[1] " : '') . "($contentType)";
@@ -230,9 +235,8 @@ final class MailPanel implements IBarPanel
 		}
 
 		$contentType = $attachment->getHeader('Content-Type');
-		assert(is_string($contentType));
 
-		$this->response->setContentType($contentType);
+		$this->response->setContentType(is_string($contentType) ? $contentType : 'application/octet-stream');
 		echo $attachment->getBody();
 		$this->sendResponse();
 	}

@@ -48,6 +48,44 @@ final class MailPanelTest extends TestCase
 		yield [VFS::register() . '://path'];
 	}
 
+	/**
+	 * @dataProvider provideRenderMissingHeaders
+	 */
+	public function testRenderMissingHeaders(Message $message, string $expected): void
+	{
+		$mailer = new TracyPanelMailer();
+		$mailer->send($message);
+		$panel = new MailPanel($mailer);
+
+		self::assertStringContainsString($expected, $panel->getPanel());
+	}
+
+	public function provideRenderMissingHeaders(): Generator
+	{
+		$message = new Message();
+		$message->addAttachment('attachment.txt', 'content')->clearHeader('Content-Type');
+
+		yield [$message, 'attachment.txt (unknown)'];
+
+		$message = new Message();
+		$message->addAttachment('attachment.txt', 'content')->clearHeader('Content-Disposition');
+
+		yield [$message, '(text/plain)'];
+
+		$message = new Message();
+		$message->setBody('Plain text body');
+		$message->addPart();
+
+		yield [$message, 'Plain text body'];
+
+		$message = new Message();
+		$message->setBody('Plain text body');
+		$message->setHtmlBody('<h1>Hello world!</h1>');
+		$message->addPart();
+
+		yield [$message, 'Plain text body'];
+	}
+
 	public function testPersistentRenderDifferences(): void
 	{
 		$path = VFS::register() . '://path';
@@ -236,6 +274,43 @@ final class MailPanelTest extends TestCase
 			self::assertTrue(isset($exception));
 		});
 		self::assertSame('Content-Type: text/plain', $response->getHeader('Content-Type'));
+		self::assertSame('content', $output);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testAttachmentMissingContentType(): void
+	{
+		Debugger::$productionMode = Debugger::Development;
+
+		$path = VFS::register() . '://path';
+		$mailer = new TracyPanelMailer($path);
+
+		$message = new Message();
+		$message->addAttachment('attachment.txt', 'content')->clearHeader('Content-Type');
+		$mailer->send($message);
+
+		$url = (new UrlScript('https://orisai.dev/foo'))
+			->withQuery([
+				'do' => 'orisai-mail-panel',
+				'orisai-action' => 'attachment',
+				'orisai-id' => array_key_first($mailer->getMessages()),
+				'orisai-attachment-id' => '0',
+			]);
+		$request = new Request($url);
+		$response = new TestResponse();
+
+		$output = Helpers::capture(static function () use ($mailer, $request, $response, $path): void {
+			try {
+				new MailPanel($mailer, $request, $response, $path);
+			} catch (MailPanelRequestTermination $exception) {
+				// Noop
+			}
+
+			self::assertTrue(isset($exception));
+		});
+		self::assertSame('Content-Type: application/octet-stream', $response->getHeader('Content-Type'));
 		self::assertSame('content', $output);
 	}
 

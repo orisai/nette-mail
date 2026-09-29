@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/orisai/nette-mail/compare/1.0.4...v1.x)
 
+### Fixed
+
+- `MailPanel`
+	- render messages with parts and attachments missing `Content-Type` or `Content-Disposition` header
+
 ## [1.0.4](https://github.com/orisai/nette-mail/compare/1.0.3...1.0.4) - 2025-01-18
 
 ### Added
