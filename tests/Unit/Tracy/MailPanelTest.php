@@ -86,6 +86,22 @@ final class MailPanelTest extends TestCase
 		yield [$message, 'Plain text body'];
 	}
 
+	public function testRenderReturnPath(): void
+	{
+		$message = new Message();
+		$message->addTo('to@example.com');
+		$message->setReturnPath('return-path@example.com');
+
+		$mailer = new TracyPanelMailer();
+		$mailer->send($message);
+		$panel = new MailPanel($mailer);
+
+		self::assertStringContainsString(
+			'<a href="mailto:return-path@example.com">return-path@example.com</a>',
+			$panel->getPanel(),
+		);
+	}
+
 	public function testPersistentRenderDifferences(): void
 	{
 		$path = VFS::register() . '://path';
