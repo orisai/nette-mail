@@ -102,6 +102,22 @@ final class MailPanelTest extends TestCase
 		);
 	}
 
+	public function testRenderAttachmentLink(): void
+	{
+		$message = new Message();
+		$message->addAttachment('attachment.txt', 'content');
+
+		$mailer = new TracyPanelMailer(VFS::register() . '://path');
+		$mailer->send($message);
+		$panel = new MailPanel($mailer, new Request(new UrlScript('https://orisai.dev/foo')));
+
+		$id = array_key_first($mailer->getMessages());
+		self::assertStringContainsString(
+			"href=\"https://orisai.dev/foo?do=orisai-mail-panel&amp;orisai-action=attachment&amp;orisai-id=$id&amp;orisai-attachment-id=0\"",
+			$panel->getPanel(),
+		);
+	}
+
 	public function testPersistentRenderDifferences(): void
 	{
 		$path = VFS::register() . '://path';

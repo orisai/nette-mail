@@ -129,7 +129,7 @@
 						{foreach $attachments as $attachmentId => $attachment}
 							<a n:tag-if="$isPersistent"
 									target="_blank"
-									href="{$createLink(['orisai-action' => 'detail', 'orisai-id' => $messageId, 'orisai-attachment-id' => $attachmentId])}"
+									href="{$createLink(['orisai-action' => 'attachment', 'orisai-id' => $messageId, 'orisai-attachment-id' => $attachmentId])}"
 							>
 								{$getAttachmentLabel($attachment)}
 							</a>

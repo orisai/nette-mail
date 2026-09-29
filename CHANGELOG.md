@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `MailPanel`
 	- render messages with parts and attachments missing `Content-Type` or `Content-Disposition` header
 	- `Return-Path` link points to the return path address
+	- attachment link opens the attachment instead of the message detail
 
 ## [1.0.4](https://github.com/orisai/nette-mail/compare/1.0.3...1.0.4) - 2025-01-18
 
