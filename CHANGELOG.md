@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- `TracyPanelMailer`
+	- `getMessages()` and `getFiles()` return persisted messages sorted from the oldest
 - `MailPanel`
+	- messages are sorted from the newest
 	- render messages with parts and attachments missing `Content-Type` or `Content-Disposition` header
 	- `Return-Path` link points to the return path address
 	- attachment link opens the attachment instead of the message detail

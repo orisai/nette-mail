@@ -224,6 +224,30 @@ MSG,
 		);
 	}
 
+	public function testPersistedMessagesAreSortedFromOldest(): void
+	{
+		$path = VFS::register() . '://path';
+		$message = $this->createMessage();
+
+		$mailer = new TracyPanelMailer($path, new FrozenClock(10));
+		$mailer->send($message);
+
+		$mailer = new TracyPanelMailer($path, new FrozenClock(5));
+		$mailer->send($message);
+
+		$mailer = new TracyPanelMailer($path, new FrozenClock(15));
+		$mailer->send($message);
+
+		$expectedIds = [
+			'1970-01-01_00-00-05-000000.data',
+			'1970-01-01_00-00-10-000000.data',
+			'1970-01-01_00-00-15-000000.data',
+		];
+
+		self::assertSame($expectedIds, array_keys($mailer->getFiles()));
+		self::assertSame($expectedIds, array_keys($mailer->getMessages()));
+	}
+
 	/**
 	 * @dataProvider providePath
 	 */

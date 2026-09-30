@@ -12,8 +12,10 @@ use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message as ExceptionMessage;
 use Psr\Clock\ClockInterface;
 use function assert;
+use function ksort;
 use function serialize;
 use function unserialize;
+use const SORT_STRING;
 
 final class TracyPanelMailer implements Mailer
 {
@@ -174,6 +176,8 @@ final class TracyPanelMailer implements Mailer
 			$id = $file->getFilename();
 			$files[$id] = $file->getPathname();
 		}
+
+		ksort($files, SORT_STRING);
 
 		return $files;
 	}
