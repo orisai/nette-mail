@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - `MailPanel`
 	- shows time when the message was sent
 
+### Changed
+
+- `MailPanelTemplate`
+	- is marked internal
+
 ### Fixed
 
 - `TracyPanelMailer`

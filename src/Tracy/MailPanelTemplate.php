@@ -7,6 +7,9 @@ use DateTimeImmutable;
 use Nette\Mail\Message;
 use Nette\Mail\MimePart;
 
+/**
+ * @internal
+ */
 final class MailPanelTemplate
 {
 
