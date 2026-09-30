@@ -3,6 +3,7 @@
 namespace OriNette\Mail\Tracy;
 
 use Closure;
+use DateTimeImmutable;
 use Latte\Engine;
 use Nette\Http\IRequest;
 use Nette\Http\IResponse;
@@ -68,6 +69,7 @@ final class MailPanel implements IBarPanel
 				$this->getCreateLinkCb(),
 				$this->getPlainTextCb(),
 				$this->getAttachmentLabelCb(),
+				$this->getSendTimeCb(),
 			),
 		);
 	}
@@ -166,6 +168,14 @@ final class MailPanel implements IBarPanel
 			/** @infection-ignore-all */
 			return ($matches !== null ? "$matches[1] " : '') . "($contentType)";
 		};
+	}
+
+	/**
+	 * @return Closure(string): (DateTimeImmutable|null)
+	 */
+	private function getSendTimeCb(): Closure
+	{
+		return fn (string $messageId): ?DateTimeImmutable => $this->mailer->getSendTime($messageId);
 	}
 
 	private function processSignal(): void

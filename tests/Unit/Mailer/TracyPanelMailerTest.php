@@ -3,6 +3,7 @@
 namespace Tests\OriNette\Mail\Unit\Mailer;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use Generator;
 use Nette\Mail\Message;
 use OriNette\Mail\Mailer\TracyPanelMailer;
@@ -246,6 +247,30 @@ MSG,
 
 		self::assertSame($expectedIds, array_keys($mailer->getFiles()));
 		self::assertSame($expectedIds, array_keys($mailer->getMessages()));
+	}
+
+	/**
+	 * @dataProvider providePath
+	 */
+	public function testSendTime(?string $path): void
+	{
+		$clock = new FrozenClock(1.123_456, new DateTimeZone('Europe/Prague'));
+		$mailer = new TracyPanelMailer($path, $clock);
+
+		$mailer->send($this->createMessage());
+
+		$id = array_key_first($mailer->getMessages());
+		self::assertNotNull($id);
+
+		$sendTime = $mailer->getSendTime($id);
+		self::assertNotNull($sendTime);
+		self::assertSame(
+			'1970-01-01T01:00:01.123456+01:00',
+			$sendTime->format('Y-m-d\TH:i:s.uP'),
+		);
+		self::assertSame('Europe/Prague', $sendTime->getTimezone()->getName());
+
+		self::assertNull($mailer->getSendTime('non-existent'));
 	}
 
 	/**

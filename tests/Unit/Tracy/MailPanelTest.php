@@ -2,6 +2,7 @@
 
 namespace Tests\OriNette\Mail\Unit\Tracy;
 
+use DateTimeZone;
 use DOMDocument;
 use DOMXPath;
 use Generator;
@@ -12,6 +13,7 @@ use OriNette\Http\Tester\TestResponse;
 use OriNette\Mail\Mailer\TracyPanelMailer;
 use OriNette\Mail\Tracy\MailPanel;
 use OriNette\Mail\Tracy\MailPanelRequestTermination;
+use Orisai\Clock\FrozenClock;
 use Orisai\VFS\VFS;
 use PHPUnit\Framework\TestCase;
 use Tracy\Debugger;
@@ -19,6 +21,8 @@ use Tracy\Helpers;
 use function array_key_first;
 use function file_put_contents;
 use function libxml_use_internal_errors;
+use function sort;
+use function strpos;
 use function trim;
 
 final class MailPanelTest extends TestCase
@@ -84,6 +88,46 @@ final class MailPanelTest extends TestCase
 		$message->addPart();
 
 		yield [$message, 'Plain text body'];
+	}
+
+	/**
+	 * @dataProvider providePath
+	 */
+	public function testRenderSendTime(?string $path): void
+	{
+		$clock = new FrozenClock(5, new DateTimeZone('Europe/Prague'));
+		$mailer = new TracyPanelMailer($path, $clock);
+		$panel = new MailPanel($mailer);
+
+		$mailer->send((new Message())->setSubject('First message'));
+
+		$clock->sleep(5);
+		$mailer->send((new Message())->setSubject('Second message'));
+
+		$clock->sleep(5);
+		$mailer->send((new Message())->setSubject('Third message'));
+
+		$content = $panel->getPanel();
+
+		$positions = [];
+		foreach (
+			[
+				'Third message',
+				'1970-01-01 01:00:15',
+				'Second message',
+				'1970-01-01 01:00:10',
+				'First message',
+				'1970-01-01 01:00:05',
+			] as $expected
+		) {
+			$position = strpos($content, $expected);
+			self::assertNotFalse($position, $expected);
+			$positions[] = $position;
+		}
+
+		$sortedPositions = $positions;
+		sort($sortedPositions);
+		self::assertSame($sortedPositions, $positions);
 	}
 
 	public function testRenderReturnPath(): void

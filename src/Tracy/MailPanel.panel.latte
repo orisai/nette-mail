@@ -94,12 +94,16 @@
 								Delete
 							</a>
 						</div>
-						<div class="orisai-mail-panel-subject"
-							 title="Sent at {$message->getHeader('Date')}"
-						>
+						<div class="orisai-mail-panel-subject">
 							{$message->getSubject()}
 						</div>
 					</th>
+				</tr>
+
+				{var $sendTime = $getSendTime((string) $messageId)}
+				<tr n:if="$sendTime !== null">
+					<th>Sent at</th>
+					<td>{$sendTime|date:'Y-m-d H:i:s'}</td>
 				</tr>
 
 				{foreach ['From', 'To', 'Cc', 'Bcc'] as $headerName}

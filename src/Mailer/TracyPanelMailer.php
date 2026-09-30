@@ -2,6 +2,7 @@
 
 namespace OriNette\Mail\Mailer;
 
+use DateTimeImmutable;
 use DateTimeInterface;
 use Nette\Mail\Mailer;
 use Nette\Mail\Message;
@@ -19,6 +20,8 @@ use const SORT_STRING;
 
 final class TracyPanelMailer implements Mailer
 {
+
+	private const IdTimeFormat = 'Y-m-d_H-i-s-u';
 
 	private ?string $tempDir;
 
@@ -49,7 +52,7 @@ final class TracyPanelMailer implements Mailer
 			$this->autoCleanupBefore = null;
 		}
 
-		$time = $this->clock->now()->format('Y-m-d_H-i-s-u');
+		$time = $this->clock->now()->format(self::IdTimeFormat);
 		$id = "$time.data";
 		$builtMessage = $mail->build();
 
@@ -140,6 +143,17 @@ final class TracyPanelMailer implements Mailer
 		assert($message instanceof Message);
 
 		return $message;
+	}
+
+	public function getSendTime(string $id): ?DateTimeImmutable
+	{
+		$time = DateTimeImmutable::createFromFormat(
+			self::IdTimeFormat . '.\d\a\t\a',
+			$id,
+			$this->clock->now()->getTimezone(),
+		);
+
+		return $time !== false ? $time : null;
 	}
 
 	public function deleteById(string $id): void

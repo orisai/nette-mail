@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased](https://github.com/orisai/nette-mail/compare/1.0.4...v1.x)
 
+### Added
+
+- `TracyPanelMailer`
+	- `getSendTime()` returns time when the message was sent
+- `MailPanel`
+	- shows time when the message was sent
+
 ### Fixed
 
 - `TracyPanelMailer`

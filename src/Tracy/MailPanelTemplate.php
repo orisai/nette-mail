@@ -3,6 +3,7 @@
 namespace OriNette\Mail\Tracy;
 
 use Closure;
+use DateTimeImmutable;
 use Nette\Mail\Message;
 use Nette\Mail\MimePart;
 
@@ -23,18 +24,23 @@ final class MailPanelTemplate
 	/** @var Closure(MimePart): string */
 	public Closure $getAttachmentLabel;
 
+	/** @var Closure(string): (DateTimeImmutable|null) */
+	public Closure $getSendTime;
+
 	/**
 	 * @param array<int|string, Message>             $messages
 	 * @param Closure(array<string, string>): string $createLink
 	 * @param Closure(MimePart): string              $getPlainText
 	 * @param Closure(MimePart): string              $getAttachmentLabel
+	 * @param Closure(string): (DateTimeImmutable|null) $getSendTime
 	 */
 	public function __construct(
 		array $messages,
 		bool $isPersistent,
 		Closure $createLink,
 		Closure $getPlainText,
-		Closure $getAttachmentLabel
+		Closure $getAttachmentLabel,
+		Closure $getSendTime
 	)
 	{
 		$this->messages = $messages;
@@ -42,6 +48,7 @@ final class MailPanelTemplate
 		$this->createLink = $createLink;
 		$this->getPlainText = $getPlainText;
 		$this->getAttachmentLabel = $getAttachmentLabel;
+		$this->getSendTime = $getSendTime;
 	}
 
 }
